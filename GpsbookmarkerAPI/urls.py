@@ -23,7 +23,7 @@ from django.conf.urls import url
 
 # Serializers define the API representation.
 from rest_framework import serializers, viewsets, routers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -31,12 +31,26 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ['url', 'username', 'email', 'is_staff']
 
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['url', 'name']
+
+
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'groups', GroupViewSet)
 
 
 
